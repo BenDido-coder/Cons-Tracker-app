@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Python 30">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Python Library — 30-Day Tracker</title>
+<style>
+:root{color-scheme:light dark;--bg:#f3f5f9;--card:#fff;--text:#182230;--muted:#687386;--line:#e3e7ef;--soft:#edf1f7;--accent:#2457d6;--accentText:#fff;--good:#17834b;--shadow:0 8px 30px rgba(24,34,48,.07)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1420;--card:#171f2d;--text:#eef2f8;--muted:#a1aec1;--line:#2a3546;--soft:#222d3e;--accent:#8baeff;--accentText:#0e1420;--good:#68d69b;--shadow:0 8px 30px rgba(0,0,0,.16)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:720px;margin:0 auto;padding:22px 16px calc(36px + env(safe-area-inset-bottom))}
+header{padding:8px 2px 18px}.eyebrow{font-size:.76rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(1.65rem,6vw,2.15rem);line-height:1.1;margin:7px 0 8px;letter-spacing:-.04em}.sub{color:var(--muted);margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:12px 0;box-shadow:var(--shadow)}
+.topline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.count{font-size:1.7rem;font-weight:850;letter-spacing:-.04em}.muted{color:var(--muted)}.small{font-size:.84rem}
+.progress{height:9px;background:var(--soft);border-radius:99px;overflow:hidden;margin:13px 0 8px}.bar{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.stat{background:var(--soft);border-radius:13px;padding:11px}.stat strong{display:block;font-size:1.15rem}.stat span{font-size:.75rem;color:var(--muted)}
+h2{font-size:1.04rem;margin:0 0 12px}.dates{font-weight:650;font-size:.9rem}.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.day{min-height:58px;border:1px solid var(--line);border-radius:13px;background:var(--soft);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font:inherit;padding:5px}
+.day .num{font-weight:800;font-size:.98rem}.day .dow{font-size:.65rem;color:var(--muted)}.day.done{background:var(--accent);color:var(--accentText);border-color:var(--accent)}.day.done .dow{color:inherit;opacity:.8}.day.today{outline:2px solid var(--accent);outline-offset:2px}.day:disabled{opacity:.38;cursor:default}
+label{display:block;font-weight:700;font-size:.88rem;margin:13px 0 6px}input,textarea,select{font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%}textarea{resize:vertical;min-height:84px}
+button.primary,button.secondary{font:inherit;font-weight:750;border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid var(--line)}button.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent);width:100%;margin-top:12px}button.secondary{background:var(--soft);color:var(--text)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:1;min-width:130px}
+.tip{border-left:3px solid var(--accent);padding:2px 0 2px 12px;color:var(--muted);font-size:.9rem}
+footer{text-align:center;color:var(--muted);font-size:.76rem;padding:14px 8px}
+@media(max-width:390px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}.card{padding:15px}.stats{gap:6px}.stat{padding:9px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="eyebrow">30 days · one commitment</div>
+  <h1>Finish a Python library</h1>
+  <p class="sub">One small, deliberate step every day. Start date: <strong id="startText">19 Oct 2026</strong></p>
+</header>
+
+<section class="card">
+  <div class="topline">
+    <div><div class="muted small">YOUR PROGRESS</div><div class="count"><span id="doneCount">0</span><span class="muted"> / 30 days</span></div></div>
+    <div style="text-align:right"><div class="muted small">COMPLETION</div><div class="count" id="percent">0%</div></div>
+  </div>
+  <div class="progress" role="progressbar" aria-label="30-day progress" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" id="progress"><div class="bar" id="bar"></div></div>
+  <div class="stats">
+    <div class="stat"><strong id="streak">0</strong><span>Current streak</span></div>
+    <div class="stat"><strong id="remaining">30</strong><span>Days left to tick</span></div>
+    <div class="stat"><strong id="endText">17 Nov</strong><span>Finish by</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="topline" style="align-items:center;margin-bottom:12px">
+    <h2 style="margin:0">Daily check-in</h2>
+    <span class="muted small">Tap a day to mark it done</span>
+  </div>
+  <div class="grid" id="days" aria-label="30-day tracker"></div>
+  <p class="tip" style="margin:16px 0 0">A minimum day counts. If you're busy, spend 10 minutes reading the docs or trying one example. Never miss twice if you can help it.</p>
+</section>
+
+<section class="card">
+  <h2>Today's commitment</h2>
+  <label for="library">Python library</label>
+  <input id="library" placeholder="e.g. pandas, requests, matplotlib">
+  <label for="task">Next small task</label>
+  <textarea id="task" placeholder="e.g. Learn Series and DataFrame basics; complete 3 examples"></textarea>
+  <label for="notes">Progress note (optional)</label>
+  <textarea id="notes" placeholder="What did I learn? What should I do next?"></textarea>
+  <button class="primary" id="save">Save today's plan</button>
+  <div class="actions">
+    <button class="secondary" id="export">Export backup</button>
+    <button class="secondary" id="reset">Reset tracker</button>
+  </div>
+  <p class="muted small" id="saveStatus" aria-live="polite">Your check-ins and notes save on this device.</p>
+</section>
+<footer>Built for steady progress, not perfect days. Your data stays in this browser.</footer>
+</main>
+<script>
+(() => {
+  const START = '2026-10-19'; // Tomorrow, based on the current date.
+  const DAYS = 30;
+  const KEY = 'python-library-consistency-v1';
+  const $ = id => document.getElementById(id);
+  const parse = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d,12); };
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const plus = (date,n) => { const d=new Date(date); d.setDate(d.getDate()+n); return d; };
+  const fmt = (d,opts={day:'numeric',month:'short'}) => d.toLocaleDateString(undefined,opts);
+  const start = parse(START), end = plus(start,DAYS-1);
+  let state = {checked:Array(DAYS).fill(false), library:'', task:'', notes:''};
+  try {
+    const old = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (old && Array.isArray(old.checked)) state = {...state,...old,checked:Array.from({length:DAYS},(_,i)=>!!old.checked[i])};
+  } catch(e) {}
+  $('startText').textContent = fmt(start,{day:'numeric',month:'short',year:'numeric'});
+  $('endText').textContent = fmt(end);
+  $('library').value = state.library || '';
+  $('task').value = state.task || '';
+  $('notes').value = state.notes || '';
+  function saveState(){ try { localStorage.setItem(KEY,JSON.stringify(state)); } catch(e) { $('saveStatus').textContent='Could not save locally. Export a backup to keep your progress.'; } }
+  function renderDays(){
+    const wrap=$('days'); wrap.innerHTML='';
+    const now=new Date(); now.setHours(0,0,0,0);
+    for(let i=0;i<DAYS;i++){
+      const date=plus(start,i), b=document.createElement('button');
+      b.type='button'; b.className='day'+(state.checked[i]?' done':'')+(iso(date)===iso(now)?' today':'');
+      b.setAttribute('aria-pressed',String(state.checked[i]));
+      b.setAttribute('aria-label',`Day ${i+1}, ${fmt(date,{day:'numeric',month:'long'})}, ${state.checked[i]?'completed':'not completed'}`);
+      b.innerHTML=`<span class="num">${state.checked[i]?'✓':i+1}</span><span class="dow">${date.toLocaleDateString(undefined,{weekday:'short'})}</span>`;
+      b.addEventListener('click',()=>{state.checked[i]=!state.checked[i];saveState();render();});
+      wrap.appendChild(b);
+    }
+  }
+  function render(){
+    const count=state.checked.filter(Boolean).length, pct=Math.round(count/DAYS*100);
+    $('doneCount').textContent=count; $('percent').textContent=pct+'%'; $('bar').style.width=pct+'%';
+    $('progress').setAttribute('aria-valuenow',count); $('remaining').textContent=DAYS-count;
+    // Count the run of completed days ending at the latest day marked complete.
+    let last=-1; for(let i=0;i<DAYS;i++) if(state.checked[i]) last=i;
+    let streak=0; for(let i=last;i>=0 && state.checked[i];i--) streak++;
+    $('streak').textContent=streak;
+    renderDays();
+  }
+  $('save').addEventListener('click',()=>{
+    state.library=$('library').value.trim();state.task=$('task').value;state.notes=$('notes').value;
+    saveState();$('saveStatus').textContent='Saved on this device.'; 
+  });
+  $('export').addEventListener('click',()=>{
+    state.library=$('library').value.trim();state.task=$('task').value;state.notes=$('notes').value;saveState();
+    const blob=new Blob([JSON.stringify({app:'Python 30-Day Tracker',exportedAt:new Date().toISOString(),...state},null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='python-30-day-tracker-backup.json';a.click();URL.revokeObjectURL(url);
+  });
+  $('reset').addEventListener('click',()=>{
+    if(!confirm('Reset all 30 check-ins and notes? Export a backup first if you want to keep them.')) return;
+    state={checked:Array(DAYS).fill(false),library:'',task:'',notes:''};$('library').value='';$('task').value='';$('notes').value='';
+    saveState();$('saveStatus').textContent='Tracker reset.';render();
+  });
+  render();
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+})();
+</script>
+</body>
+</html>
